@@ -1321,6 +1321,11 @@ function editOrder(id) {
 }
 
 function addEditOrderItem(productId, quantity, price, existingId) {
+    productId = productId || null;
+    quantity = quantity || '';
+    price = price || '';
+    existingId = existingId || '';
+    
     var container = document.getElementById('edit-order-items-container');
     if (!container) return;
     var itemId = editOrderItemsCount++;
@@ -1332,10 +1337,10 @@ function addEditOrderItem(productId, quantity, price, existingId) {
             options += '<option value="' + p.id + '" data-price="' + p.price_per_portion + '"' + selected + '>' + p.name + ' - ₪' + p.price_per_portion + '</option>';
         }
     }
-    var html = '<div class="row g-2 mb-2 edit-order-item" data-item-id="' + itemId + '" data-existing-id="' + (existingId || '') + '">' +
+    var html = '<div class="row g-2 mb-2 edit-order-item" data-item-id="' + itemId + '" data-existing-id="' + existingId + '">' +
         '<div class="col-md-5"><select class="form-select form-select-sm" name="edit_product_' + itemId + '" onchange="updateEditOrderItemPrice(' + itemId + ')">' + options + '</select></div>' +
-        '<div class="col-md-2"><input type="number" class="form-control form-control-sm" name="edit_quantity_' + itemId + '" placeholder="כמות" min="1" value="' + (quantity || '') + '" onchange="updateEditOrderItemPrice(' + itemId + ')"></div>' +
-        '<div class="col-md-2"><input type="number" class="form-control form-control-sm" name="edit_price_' + itemId + '" placeholder="מחיר" step="0.01" value="' + (price || '') + '" onchange="calculateEditOrderTotal()"></div>' +
+        '<div class="col-md-2"><input type="number" class="form-control form-control-sm" name="edit_quantity_' + itemId + '" placeholder="כמות" min="1" value="' + quantity + '" onchange="updateEditOrderItemPrice(' + itemId + ')"></div>' +
+        '<div class="col-md-2"><input type="number" class="form-control form-control-sm" name="edit_price_' + itemId + '" placeholder="מחיר" step="0.01" value="' + price + '" onchange="calculateEditOrderTotal()"></div>' +
         '<div class="col-md-2"><span class="form-control-plaintext edit-item-total" id="edit-item-total-' + itemId + '">₪0</span></div>' +
         '<div class="col-md-1"><button type="button" class="btn btn-sm btn-outline-danger" onclick="removeEditOrderItem(' + itemId + ')"><i class="bi bi-x"></i></button></div></div>';
     container.insertAdjacentHTML('beforeend', html);
@@ -1364,6 +1369,11 @@ function updateEditOrderItemPrice(itemId) {
 }
 
 function addEditOrderTableItem(tableItemId, quantity, price, existingId) {
+    tableItemId = tableItemId || null;
+    quantity = quantity || '';
+    price = price || '';
+    existingId = existingId || '';
+    
     var container = document.getElementById('edit-order-table-items-container');
     if (!container) return;
     var itemId = editOrderTableItemsCount++;
@@ -1373,10 +1383,10 @@ function addEditOrderTableItem(tableItemId, quantity, price, existingId) {
         var selected = (tableItemId && t.id === tableItemId) ? ' selected' : '';
         options += '<option value="' + t.id + '" data-price="' + t.price_per_unit + '"' + selected + '>' + t.name + ' - ₪' + t.price_per_unit + '</option>';
     }
-    var html = '<div class="row g-2 mb-2 edit-order-table-item" data-item-id="' + itemId + '" data-existing-id="' + (existingId || '') + '">' +
+    var html = '<div class="row g-2 mb-2 edit-order-table-item" data-item-id="' + itemId + '" data-existing-id="' + existingId + '">' +
         '<div class="col-md-5"><select class="form-select form-select-sm" name="edit_table_item_' + itemId + '" onchange="updateEditOrderTableItemPrice(' + itemId + ')">' + options + '</select></div>' +
-        '<div class="col-md-2"><input type="number" class="form-control form-control-sm" name="edit_table_quantity_' + itemId + '" placeholder="כמות" min="1" value="' + (quantity || '') + '" onchange="updateEditOrderTableItemPrice(' + itemId + ')"></div>' +
-        '<div class="col-md-2"><input type="number" class="form-control form-control-sm" name="edit_table_price_' + itemId + '" placeholder="מחיר" step="0.01" value="' + (price || '') + '" onchange="calculateEditOrderTotal()"></div>' +
+        '<div class="col-md-2"><input type="number" class="form-control form-control-sm" name="edit_table_quantity_' + itemId + '" placeholder="כמות" min="1" value="' + quantity + '" onchange="updateEditOrderTableItemPrice(' + itemId + ')"></div>' +
+        '<div class="col-md-2"><input type="number" class="form-control form-control-sm" name="edit_table_price_' + itemId + '" placeholder="מחיר" step="0.01" value="' + price + '" onchange="calculateEditOrderTotal()"></div>' +
         '<div class="col-md-2"><span class="form-control-plaintext edit-table-item-total" id="edit-table-item-total-' + itemId + '">₪0</span></div>' +
         '<div class="col-md-1"><button type="button" class="btn btn-sm btn-outline-danger" onclick="removeEditOrderTableItem(' + itemId + ')"><i class="bi bi-x"></i></button></div></div>';
     container.insertAdjacentHTML('beforeend', html);
