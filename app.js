@@ -1,6 +1,6 @@
 // Hershi Koritz Catering System
 var SUPABASE_URL = 'https://brmnbunyebbmdwvpaluz.supabase.co';
-var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJybW5idW55ZWJibWR3dnBhbHV6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzQwMTcxNDMsImV4cCI6MjA0OTU5MzE0M30.h0p3wMNMsxKCXLK7-LGYCgKnu8_lGzf4Xvxe_CPGFQE';
+var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJybW5idW55ZWJibWR3dnBhbHV6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYwNjgwOTYsImV4cCI6MjA4MTY0NDA5Nn0.YnZwnllqzaHeCZNehyhLryJXK_mMltKojQdv734q9cw';
 var db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 var cachedData = {
