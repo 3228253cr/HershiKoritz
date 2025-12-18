@@ -1597,6 +1597,7 @@ function generateReport(reportType) {
 
 function generateProductionReport(orders, type) {
     var html = '';
+    var validOrderIndex = 0;
     for (var i = 0; i < orders.length; i++) {
         var order = orders[i];
         var items = (order.order_items || []).filter(function(item) {
@@ -1604,8 +1605,9 @@ function generateProductionReport(orders, type) {
         });
         if (items.length === 0) continue;
         
-        var pageBreak = (i > 0) ? ' style="page-break-before: always;"' : '';
-        html += '<div class="report-section mb-4"' + pageBreak + '>';
+        var pageBreakClass = (validOrderIndex > 0) ? ' page-break' : '';
+        validOrderIndex++;
+        html += '<div class="report-section mb-4' + pageBreakClass + '">';
         html += '<div class="bg-' + (type === 'cold' ? 'info' : 'danger') + ' text-white p-3 rounded-top">';
         html += '<h5 class="mb-1">הזמנה #' + order.order_number + ' - ' + (order.customers ? order.customers.name : 'לקוח') + '</h5>';
         html += '<p class="mb-0"><strong>תאריך:</strong> ' + order.event_date + ' | <strong>שעת משלוח:</strong> ' + order.delivery_time + '</p></div>';
