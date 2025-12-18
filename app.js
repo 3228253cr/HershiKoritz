@@ -1,7 +1,7 @@
 // Hershi Koritz Catering System
-const SUPABASE_URL = 'https://brmnbunyebbmdwvpaluz.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJybW5idW55ZWJibWR3dnBhbHV6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzQwMTcxNDMsImV4cCI6MjA0OTU5MzE0M30.h0p3wMNMsxKCXLK7-LGYCgKnu8_lGzf4Xvxe_CPGFQE';
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+var SUPABASE_URL = 'https://brmnbunyebbmdwvpaluz.supabase.co';
+var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJybW5idW55ZWJibWR3dnBhbHV6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzQwMTcxNDMsImV4cCI6MjA0OTU5MzE0M30.h0p3wMNMsxKCXLK7-LGYCgKnu8_lGzf4Xvxe_CPGFQE';
+var supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 var cachedData = {
     categories: [],
@@ -103,7 +103,7 @@ function loadAllData() {
 }
 
 function loadCategories() {
-    return supabase.from('categories').select('*').order('name').then(function(res) {
+    return supabaseClient.from('categories').select('*').order('name').then(function(res) {
         if (res.error) throw res.error;
         cachedData.categories = res.data || [];
         renderCategoriesTable();
@@ -112,7 +112,7 @@ function loadCategories() {
 }
 
 function loadProducts() {
-    return supabase.from('products').select('*, categories(name, type)').order('name').then(function(res) {
+    return supabaseClient.from('products').select('*, categories(name, type)').order('name').then(function(res) {
         if (res.error) throw res.error;
         cachedData.products = res.data || [];
         renderProductsTable();
@@ -121,7 +121,7 @@ function loadProducts() {
 }
 
 function loadContainers() {
-    return supabase.from('containers').select('*').order('name').then(function(res) {
+    return supabaseClient.from('containers').select('*').order('name').then(function(res) {
         if (res.error) throw res.error;
         cachedData.containers = res.data || [];
         renderContainersTable();
@@ -130,7 +130,7 @@ function loadContainers() {
 }
 
 function loadCustomers() {
-    return supabase.from('customers').select('*').order('name').then(function(res) {
+    return supabaseClient.from('customers').select('*').order('name').then(function(res) {
         if (res.error) throw res.error;
         cachedData.customers = res.data || [];
         renderCustomersTable();
@@ -139,7 +139,7 @@ function loadCustomers() {
 }
 
 function loadSuppliers() {
-    return supabase.from('suppliers').select('*').order('name').then(function(res) {
+    return supabaseClient.from('suppliers').select('*').order('name').then(function(res) {
         if (res.error) throw res.error;
         cachedData.suppliers = res.data || [];
         renderSuppliersTable();
@@ -148,7 +148,7 @@ function loadSuppliers() {
 }
 
 function loadTableItems() {
-    return supabase.from('table_items').select('*, suppliers(name)').order('name').then(function(res) {
+    return supabaseClient.from('table_items').select('*, suppliers(name)').order('name').then(function(res) {
         if (res.error) throw res.error;
         cachedData.tableItems = res.data || [];
         renderTableItemsTable();
@@ -156,7 +156,7 @@ function loadTableItems() {
 }
 
 function loadIngredients() {
-    return supabase.from('ingredients').select('*').order('name').then(function(res) {
+    return supabaseClient.from('ingredients').select('*').order('name').then(function(res) {
         if (res.error) throw res.error;
         cachedData.ingredients = res.data || [];
         renderIngredientsTable();
@@ -165,7 +165,7 @@ function loadIngredients() {
 }
 
 function loadPackingRules() {
-    return supabase.from('packing_rules').select('*, products(name), containers(name)').order('product_id').then(function(res) {
+    return supabaseClient.from('packing_rules').select('*, products(name), containers(name)').order('product_id').then(function(res) {
         if (res.error) throw res.error;
         cachedData.packingRules = res.data || [];
         renderPackingRulesTable();
@@ -177,7 +177,7 @@ function loadOrders() {
     var toDate = document.getElementById('filter-to-date').value;
     var status = document.getElementById('filter-status').value;
     
-    var query = supabase.from('orders').select('*, customers(name)').order('event_date', { ascending: true });
+    var query = supabaseClient.from('orders').select('*, customers(name)').order('event_date', { ascending: true });
     if (fromDate) query = query.gte('event_date', fromDate);
     if (toDate) query = query.lte('event_date', toDate);
     if (status) query = query.eq('status', status);
@@ -192,17 +192,17 @@ function loadHomeStats() {
     var today = new Date().toISOString().split('T')[0];
     var weekAgo = new Date(Date.now() - 7*24*60*60*1000).toISOString().split('T')[0];
     
-    supabase.from('orders').select('id').eq('event_date', today).then(function(res) {
+    supabaseClient.from('orders').select('id').eq('event_date', today).then(function(res) {
         var el = document.getElementById('stat-orders-today');
         if (el) el.textContent = (res.data || []).length;
     });
     
-    supabase.from('orders').select('id').gte('event_date', weekAgo).then(function(res) {
+    supabaseClient.from('orders').select('id').gte('event_date', weekAgo).then(function(res) {
         var el = document.getElementById('stat-orders-week');
         if (el) el.textContent = (res.data || []).length;
     });
     
-    supabase.from('orders').select('total_amount, paid_amount').then(function(res) {
+    supabaseClient.from('orders').select('total_amount, paid_amount').then(function(res) {
         var orders = res.data || [];
         var pending = 0;
         for (var i = 0; i < orders.length; i++) {
@@ -215,7 +215,7 @@ function loadHomeStats() {
     var el = document.getElementById('stat-customers');
     if (el) el.textContent = cachedData.customers.length;
     
-    supabase.from('orders').select('*, customers(name)').eq('event_date', today).order('delivery_time').then(function(res) {
+    supabaseClient.from('orders').select('*, customers(name)').eq('event_date', today).order('delivery_time').then(function(res) {
         renderTodayOrdersTable(res.data || []);
     });
     
@@ -224,7 +224,7 @@ function loadHomeStats() {
 
 function loadOrdersForReportSelect() {
     var today = new Date().toISOString().split('T')[0];
-    supabase.from('orders').select('*, customers(name)').gte('event_date', today).order('event_date').then(function(res) {
+    supabaseClient.from('orders').select('*, customers(name)').gte('event_date', today).order('event_date').then(function(res) {
         var select = document.getElementById('report-order-select');
         if (!select) return;
         select.innerHTML = '<option value="">בחר הזמנה...</option>';
@@ -240,7 +240,7 @@ function loadOrdersForReportSelect() {
 }
 
 function loadPaymentsPage() {
-    supabase.from('orders').select('*, customers(name)').order('event_date', { ascending: false }).then(function(res) {
+    supabaseClient.from('orders').select('*, customers(name)').order('event_date', { ascending: false }).then(function(res) {
         var orders = res.data || [];
         var tbody = document.getElementById('payments-table');
         if (!tbody) return;
@@ -618,8 +618,8 @@ function saveCustomer() {
     };
     
     var promise = id 
-        ? supabase.from('customers').update(data).eq('id', id)
-        : supabase.from('customers').insert([data]);
+        ? supabaseClient.from('customers').update(data).eq('id', id)
+        : supabaseClient.from('customers').insert([data]);
     
     promise.then(function(res) {
         if (res.error) throw res.error;
@@ -648,7 +648,7 @@ function editCustomer(id) {
 
 function deleteCustomer(id) {
     if (!confirm('האם למחוק את הלקוח?')) return;
-    supabase.from('customers').delete().eq('id', id).then(function(res) {
+    supabaseClient.from('customers').delete().eq('id', id).then(function(res) {
         if (res.error) throw res.error;
         showToast('לקוח נמחק');
         loadCustomers();
@@ -667,8 +667,8 @@ function saveProduct() {
     };
     
     var promise = id 
-        ? supabase.from('products').update(data).eq('id', id)
-        : supabase.from('products').insert([data]);
+        ? supabaseClient.from('products').update(data).eq('id', id)
+        : supabaseClient.from('products').insert([data]);
     
     promise.then(function(res) {
         if (res.error) throw res.error;
@@ -697,7 +697,7 @@ function editProduct(id) {
 
 function deleteProduct(id) {
     if (!confirm('האם למחוק את המוצר?')) return;
-    supabase.from('products').delete().eq('id', id).then(function(res) {
+    supabaseClient.from('products').delete().eq('id', id).then(function(res) {
         if (res.error) throw res.error;
         showToast('מוצר נמחק');
         loadProducts();
@@ -713,8 +713,8 @@ function saveCategory() {
     };
     
     var promise = id 
-        ? supabase.from('categories').update(data).eq('id', id)
-        : supabase.from('categories').insert([data]);
+        ? supabaseClient.from('categories').update(data).eq('id', id)
+        : supabaseClient.from('categories').insert([data]);
     
     promise.then(function(res) {
         if (res.error) throw res.error;
@@ -740,7 +740,7 @@ function editCategory(id) {
 
 function deleteCategory(id) {
     if (!confirm('האם למחוק את הקטגוריה?')) return;
-    supabase.from('categories').delete().eq('id', id).then(function(res) {
+    supabaseClient.from('categories').delete().eq('id', id).then(function(res) {
         if (res.error) throw res.error;
         showToast('קטגוריה נמחקה');
         loadCategories();
@@ -758,8 +758,8 @@ function saveContainer() {
     };
     
     var promise = id 
-        ? supabase.from('containers').update(data).eq('id', id)
-        : supabase.from('containers').insert([data]);
+        ? supabaseClient.from('containers').update(data).eq('id', id)
+        : supabaseClient.from('containers').insert([data]);
     
     promise.then(function(res) {
         if (res.error) throw res.error;
@@ -787,7 +787,7 @@ function editContainer(id) {
 
 function deleteContainer(id) {
     if (!confirm('האם למחוק את המיכל?')) return;
-    supabase.from('containers').delete().eq('id', id).then(function(res) {
+    supabaseClient.from('containers').delete().eq('id', id).then(function(res) {
         if (res.error) throw res.error;
         showToast('מיכל נמחק');
         loadContainers();
@@ -808,8 +808,8 @@ function saveSupplier() {
     };
     
     var promise = id 
-        ? supabase.from('suppliers').update(data).eq('id', id)
-        : supabase.from('suppliers').insert([data]);
+        ? supabaseClient.from('suppliers').update(data).eq('id', id)
+        : supabaseClient.from('suppliers').insert([data]);
     
     promise.then(function(res) {
         if (res.error) throw res.error;
@@ -840,7 +840,7 @@ function editSupplier(id) {
 
 function deleteSupplier(id) {
     if (!confirm('האם למחוק את הספק?')) return;
-    supabase.from('suppliers').delete().eq('id', id).then(function(res) {
+    supabaseClient.from('suppliers').delete().eq('id', id).then(function(res) {
         if (res.error) throw res.error;
         showToast('ספק נמחק');
         loadSuppliers();
@@ -858,8 +858,8 @@ function saveTableItem() {
     };
     
     var promise = id 
-        ? supabase.from('table_items').update(data).eq('id', id)
-        : supabase.from('table_items').insert([data]);
+        ? supabaseClient.from('table_items').update(data).eq('id', id)
+        : supabaseClient.from('table_items').insert([data]);
     
     promise.then(function(res) {
         if (res.error) throw res.error;
@@ -884,7 +884,7 @@ function editTableItem(id) {
 
 function deleteTableItem(id) {
     if (!confirm('למחוק?')) return;
-    supabase.from('table_items').delete().eq('id', id).then(function(res) {
+    supabaseClient.from('table_items').delete().eq('id', id).then(function(res) {
         if (res.error) throw res.error;
         showToast('נמחק');
         loadTableItems();
@@ -902,8 +902,8 @@ function savePackingRule() {
     };
     
     var promise = id 
-        ? supabase.from('packing_rules').update(data).eq('id', id)
-        : supabase.from('packing_rules').insert([data]);
+        ? supabaseClient.from('packing_rules').update(data).eq('id', id)
+        : supabaseClient.from('packing_rules').insert([data]);
     
     promise.then(function(res) {
         if (res.error) throw res.error;
@@ -928,7 +928,7 @@ function editPackingRule(id) {
 
 function deletePackingRule(id) {
     if (!confirm('למחוק?')) return;
-    supabase.from('packing_rules').delete().eq('id', id).then(function(res) {
+    supabaseClient.from('packing_rules').delete().eq('id', id).then(function(res) {
         if (res.error) throw res.error;
         showToast('נמחק');
         loadPackingRules();
@@ -947,8 +947,8 @@ function saveIngredient() {
     };
     
     var promise = id 
-        ? supabase.from('ingredients').update(data).eq('id', id)
-        : supabase.from('ingredients').insert([data]);
+        ? supabaseClient.from('ingredients').update(data).eq('id', id)
+        : supabaseClient.from('ingredients').insert([data]);
     
     promise.then(function(res) {
         if (res.error) throw res.error;
@@ -974,7 +974,7 @@ function editIngredient(id) {
 
 function deleteIngredient(id) {
     if (!confirm('למחוק?')) return;
-    supabase.from('ingredients').delete().eq('id', id).then(function(res) {
+    supabaseClient.from('ingredients').delete().eq('id', id).then(function(res) {
         if (res.error) throw res.error;
         showToast('נמחק');
         loadIngredients();
@@ -992,8 +992,8 @@ function saveRecipe() {
     };
     
     var promise = id 
-        ? supabase.from('recipes').update(data).eq('id', id)
-        : supabase.from('recipes').insert([data]);
+        ? supabaseClient.from('recipes').update(data).eq('id', id)
+        : supabaseClient.from('recipes').insert([data]);
     
     promise.then(function(res) {
         if (res.error) throw res.error;
@@ -1016,12 +1016,12 @@ function savePayment() {
         notes: document.getElementById('payment-notes').value
     };
     
-    supabase.from('payments').insert([data]).then(function(res) {
+    supabaseClient.from('payments').insert([data]).then(function(res) {
         if (res.error) throw res.error;
-        return supabase.from('orders').select('paid_amount').eq('id', orderId).single();
+        return supabaseClient.from('orders').select('paid_amount').eq('id', orderId).single();
     }).then(function(res) {
         var newPaid = (res.data.paid_amount || 0) + amount;
-        return supabase.from('orders').update({ paid_amount: newPaid }).eq('id', orderId);
+        return supabaseClient.from('orders').update({ paid_amount: newPaid }).eq('id', orderId);
     }).then(function() {
         showToast('תשלום נרשם');
         bootstrap.Modal.getInstance(document.getElementById('paymentModal')).hide();
@@ -1151,7 +1151,7 @@ function saveOrder() {
         status: 'new'
     };
     
-    supabase.from('orders').insert([orderData]).select().single().then(function(res) {
+    supabaseClient.from('orders').insert([orderData]).select().single().then(function(res) {
         if (res.error) throw res.error;
         var order = res.data;
         
@@ -1180,8 +1180,8 @@ function saveOrder() {
         }
         
         var promises = [];
-        if (orderItems.length > 0) promises.push(supabase.from('order_items').insert(orderItems));
-        if (tableItems.length > 0) promises.push(supabase.from('order_table_items').insert(tableItems));
+        if (orderItems.length > 0) promises.push(supabaseClient.from('order_items').insert(orderItems));
+        if (tableItems.length > 0) promises.push(supabaseClient.from('order_table_items').insert(tableItems));
         
         return Promise.all(promises);
     }).then(function() {
@@ -1221,9 +1221,9 @@ function generateReport(reportType) {
     
     var query;
     if (orderId) {
-        query = supabase.from('orders').select('*, customers(name), order_items(*, products(name, categories(type))), order_table_items(*, table_items(name))').eq('id', orderId);
+        query = supabaseClient.from('orders').select('*, customers(name), order_items(*, products(name, categories(type))), order_table_items(*, table_items(name))').eq('id', orderId);
     } else {
-        query = supabase.from('orders').select('*, customers(name), order_items(*, products(name, categories(type))), order_table_items(*, table_items(name))').eq('event_date', reportDate);
+        query = supabaseClient.from('orders').select('*, customers(name), order_items(*, products(name, categories(type))), order_table_items(*, table_items(name))').eq('event_date', reportDate);
     }
     
     query.then(function(res) {
