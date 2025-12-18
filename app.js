@@ -1539,20 +1539,53 @@ function generateReport(reportType) {
         
         var reportContent = '';
         var reportTitle = '';
+        var printHeader = '';
         
         switch (reportType) {
-            case 'cold-production': reportTitle = 'דוח ייצור פס קר'; reportContent = generateProductionReport(orders, 'cold'); break;
-            case 'cold-packing': reportTitle = 'דוח אריזה פס קר'; reportContent = generateProductionReport(orders, 'cold'); break;
-            case 'hot-production': reportTitle = 'דוח ייצור פס חם'; reportContent = generateProductionReport(orders, 'hot'); break;
-            case 'hot-packing': reportTitle = 'דוח אריזה פס חם'; reportContent = generateProductionReport(orders, 'hot'); break;
-            case 'storage': reportTitle = 'סיכום מלאי/אחסון'; reportContent = generateStorageReport(orders); break;
-            case 'quantities': reportTitle = 'דוח כמויות כללי'; reportContent = generateQuantitiesReport(orders); break;
-            case 'bakery': reportTitle = 'הזמנה לקונדיטוריה'; reportContent = generateSupplierOrderReport(orders, 'bakery'); break;
-            case 'table-items': reportTitle = 'הזמנה לפריטי שולחן'; reportContent = generateTableItemsReport(orders); break;
+            case 'cold-production': 
+                reportTitle = 'דוח ייצור פס קר'; 
+                printHeader = '<div class="print-only text-center mb-4"><h2>דוח ייצור פס קר</h2><p>תאריך: ' + (reportDate || orders[0].event_date) + '</p></div>';
+                reportContent = generateProductionReport(orders, 'cold'); 
+                break;
+            case 'cold-packing': 
+                reportTitle = 'דוח אריזה פס קר'; 
+                printHeader = '<div class="print-only text-center mb-4"><h2>דוח אריזה פס קר</h2><p>תאריך: ' + (reportDate || orders[0].event_date) + '</p></div>';
+                reportContent = generateProductionReport(orders, 'cold'); 
+                break;
+            case 'hot-production': 
+                reportTitle = 'דוח ייצור פס חם'; 
+                printHeader = '<div class="print-only text-center mb-4"><h2>דוח ייצור פס חם</h2><p>תאריך: ' + (reportDate || orders[0].event_date) + '</p></div>';
+                reportContent = generateProductionReport(orders, 'hot'); 
+                break;
+            case 'hot-packing': 
+                reportTitle = 'דוח אריזה פס חם'; 
+                printHeader = '<div class="print-only text-center mb-4"><h2>דוח אריזה פס חם</h2><p>תאריך: ' + (reportDate || orders[0].event_date) + '</p></div>';
+                reportContent = generateProductionReport(orders, 'hot'); 
+                break;
+            case 'storage': 
+                reportTitle = 'סיכום מלאי/אחסון'; 
+                printHeader = '<div class="print-only text-center mb-4"><h2>סיכום מלאי/אחסון</h2><p>תאריך: ' + (reportDate || orders[0].event_date) + '</p></div>';
+                reportContent = generateStorageReport(orders); 
+                break;
+            case 'quantities': 
+                reportTitle = 'דוח כמויות כללי'; 
+                printHeader = '<div class="print-only text-center mb-4"><h2>דוח כמויות כללי</h2><p>תאריך: ' + (reportDate || orders[0].event_date) + '</p></div>';
+                reportContent = generateQuantitiesReport(orders); 
+                break;
+            case 'bakery': 
+                reportTitle = 'הזמנה לקונדיטוריה'; 
+                printHeader = '<div class="print-only text-center mb-4"><h2>הזמנה לקונדיטוריה</h2><p>תאריך: ' + (reportDate || orders[0].event_date) + '</p></div>';
+                reportContent = generateSupplierOrderReport(orders, 'bakery'); 
+                break;
+            case 'table-items': 
+                reportTitle = 'הזמנה לפריטי שולחן'; 
+                printHeader = '<div class="print-only text-center mb-4"><h2>הזמנה לפריטי שולחן</h2><p>תאריך: ' + (reportDate || orders[0].event_date) + '</p></div>';
+                reportContent = generateTableItemsReport(orders); 
+                break;
         }
         
         document.getElementById('report-title').textContent = reportTitle;
-        document.getElementById('report-content').innerHTML = reportContent;
+        document.getElementById('report-content').innerHTML = printHeader + reportContent;
         showPage('report-display');
         showLoading(false);
     }).catch(function(err) {
