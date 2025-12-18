@@ -1260,7 +1260,15 @@ function viewOrder(id) {
     });
 }
 
+var editOrderItemsCount = 0;
+var editOrderTableItemsCount = 0;
+var currentEditOrderId = null;
+
 function editOrder(id) {
+    currentEditOrderId = id;
+    editOrderItemsCount = 0;
+    editOrderTableItemsCount = 0;
+    
     db.from('orders').select('*, order_items(*, products(name, price_per_portion)), order_table_items(*, table_items(name, price_per_unit))').eq('id', id).single().then(function(res) {
         if (res.error) { showToast('שגיאה בטעינת הזמנה', 'error'); return; }
         var order = res.data;
@@ -1287,12 +1295,138 @@ function editOrder(id) {
             customerSelect.appendChild(opt);
         }
         
+        // Clear and populate order items
+        var itemsContainer = document.getElementById('edit-order-items-container');
+        itemsContainer.innerHTML = '';
+        if (order.order_items && order.order_items.length > 0) {
+            for (var i = 0; i < order.order_items.length; i++) {
+                var item = order.order_items[i];
+                addEditOrderItem(item.product_id, item.quantity, item.price_per_unit, item.id);
+            }
+        }
+        
+        // Clear and populate table items
+        var tableContainer = document.getElementById('edit-order-table-items-container');
+        tableContainer.innerHTML = '';
+        if (order.order_table_items && order.order_table_items.length > 0) {
+            for (var j = 0; j < order.order_table_items.length; j++) {
+                var tItem = order.order_table_items[j];
+                addEditOrderTableItem(tItem.table_item_id, tItem.quantity, tItem.price_per_unit, tItem.id);
+            }
+        }
+        
+        calculateEditOrderTotal();
         new bootstrap.Modal(document.getElementById('editOrderModal')).show();
     });
 }
 
+function addEditOrderItem(productId, quantity, price, existingId) {
+    var container = document.getElementById('edit-order-items-container');
+    if (!container) return;
+    var itemId = editOrderItemsCount++;
+    var options = '<option value="">בחר מוצר...</option>';
+    for (var i = 0; i < cachedData.products.length; i++) {
+        var p = cachedData.products[i];
+        if (p.is_active) {
+            var selected = (productId && p.id === productId) ? ' selected' : '';
+            options += '<option value="' + p.id + '" data-price="' + p.price_per_portion + '"' + selected + '>' + p.name + ' - ₪' + p.price_per_portion + '</option>';
+        }
+    }
+    var html = '<div class="row g-2 mb-2 edit-order-item" data-item-id="' + itemId + '" data-existing-id="' + (existingId || '') + '">' +
+        '<div class="col-md-5"><select class="form-select form-select-sm" name="edit_product_' + itemId + '" onchange="updateEditOrderItemPrice(' + itemId + ')">' + options + '</select></div>' +
+        '<div class="col-md-2"><input type="number" class="form-control form-control-sm" name="edit_quantity_' + itemId + '" placeholder="כמות" min="1" value="' + (quantity || '') + '" onchange="updateEditOrderItemPrice(' + itemId + ')"></div>' +
+        '<div class="col-md-2"><input type="number" class="form-control form-control-sm" name="edit_price_' + itemId + '" placeholder="מחיר" step="0.01" value="' + (price || '') + '" onchange="calculateEditOrderTotal()"></div>' +
+        '<div class="col-md-2"><span class="form-control-plaintext edit-item-total" id="edit-item-total-' + itemId + '">₪0</span></div>' +
+        '<div class="col-md-1"><button type="button" class="btn btn-sm btn-outline-danger" onclick="removeEditOrderItem(' + itemId + ')"><i class="bi bi-x"></i></button></div></div>';
+    container.insertAdjacentHTML('beforeend', html);
+    updateEditOrderItemPrice(itemId);
+}
+
+function removeEditOrderItem(itemId) {
+    var el = document.querySelector('.edit-order-item[data-item-id="' + itemId + '"]');
+    if (el) el.remove();
+    calculateEditOrderTotal();
+}
+
+function updateEditOrderItemPrice(itemId) {
+    var select = document.querySelector('select[name="edit_product_' + itemId + '"]');
+    var qtyInput = document.querySelector('input[name="edit_quantity_' + itemId + '"]');
+    var priceInput = document.querySelector('input[name="edit_price_' + itemId + '"]');
+    var totalSpan = document.getElementById('edit-item-total-' + itemId);
+    
+    var opt = select.options[select.selectedIndex];
+    var price = priceInput.value ? parseFloat(priceInput.value) : (opt && opt.dataset.price ? parseFloat(opt.dataset.price) : 0);
+    var qty = parseInt(qtyInput.value) || 0;
+    
+    if (!priceInput.value && opt && opt.dataset.price) priceInput.value = opt.dataset.price;
+    totalSpan.textContent = '₪' + (price * qty).toFixed(2);
+    calculateEditOrderTotal();
+}
+
+function addEditOrderTableItem(tableItemId, quantity, price, existingId) {
+    var container = document.getElementById('edit-order-table-items-container');
+    if (!container) return;
+    var itemId = editOrderTableItemsCount++;
+    var options = '<option value="">בחר פריט...</option>';
+    for (var i = 0; i < cachedData.tableItems.length; i++) {
+        var t = cachedData.tableItems[i];
+        var selected = (tableItemId && t.id === tableItemId) ? ' selected' : '';
+        options += '<option value="' + t.id + '" data-price="' + t.price_per_unit + '"' + selected + '>' + t.name + ' - ₪' + t.price_per_unit + '</option>';
+    }
+    var html = '<div class="row g-2 mb-2 edit-order-table-item" data-item-id="' + itemId + '" data-existing-id="' + (existingId || '') + '">' +
+        '<div class="col-md-5"><select class="form-select form-select-sm" name="edit_table_item_' + itemId + '" onchange="updateEditOrderTableItemPrice(' + itemId + ')">' + options + '</select></div>' +
+        '<div class="col-md-2"><input type="number" class="form-control form-control-sm" name="edit_table_quantity_' + itemId + '" placeholder="כמות" min="1" value="' + (quantity || '') + '" onchange="updateEditOrderTableItemPrice(' + itemId + ')"></div>' +
+        '<div class="col-md-2"><input type="number" class="form-control form-control-sm" name="edit_table_price_' + itemId + '" placeholder="מחיר" step="0.01" value="' + (price || '') + '" onchange="calculateEditOrderTotal()"></div>' +
+        '<div class="col-md-2"><span class="form-control-plaintext edit-table-item-total" id="edit-table-item-total-' + itemId + '">₪0</span></div>' +
+        '<div class="col-md-1"><button type="button" class="btn btn-sm btn-outline-danger" onclick="removeEditOrderTableItem(' + itemId + ')"><i class="bi bi-x"></i></button></div></div>';
+    container.insertAdjacentHTML('beforeend', html);
+    updateEditOrderTableItemPrice(itemId);
+}
+
+function removeEditOrderTableItem(itemId) {
+    var el = document.querySelector('.edit-order-table-item[data-item-id="' + itemId + '"]');
+    if (el) el.remove();
+    calculateEditOrderTotal();
+}
+
+function updateEditOrderTableItemPrice(itemId) {
+    var select = document.querySelector('select[name="edit_table_item_' + itemId + '"]');
+    var qtyInput = document.querySelector('input[name="edit_table_quantity_' + itemId + '"]');
+    var priceInput = document.querySelector('input[name="edit_table_price_' + itemId + '"]');
+    var totalSpan = document.getElementById('edit-table-item-total-' + itemId);
+    
+    var opt = select.options[select.selectedIndex];
+    var price = priceInput.value ? parseFloat(priceInput.value) : (opt && opt.dataset.price ? parseFloat(opt.dataset.price) : 0);
+    var qty = parseInt(qtyInput.value) || 0;
+    
+    if (!priceInput.value && opt && opt.dataset.price) priceInput.value = opt.dataset.price;
+    totalSpan.textContent = '₪' + (price * qty).toFixed(2);
+    calculateEditOrderTotal();
+}
+
+function calculateEditOrderTotal() {
+    var productsTotal = 0;
+    var tableTotal = 0;
+    
+    var itemTotals = document.querySelectorAll('.edit-order-item .edit-item-total');
+    for (var i = 0; i < itemTotals.length; i++) {
+        productsTotal += parseFloat(itemTotals[i].textContent.replace('₪', '')) || 0;
+    }
+    
+    var tableTotals = document.querySelectorAll('.edit-order-table-item .edit-table-item-total');
+    for (var j = 0; j < tableTotals.length; j++) {
+        tableTotal += parseFloat(tableTotals[j].textContent.replace('₪', '')) || 0;
+    }
+    
+    var el1 = document.getElementById('edit-order-products-total'); if (el1) el1.textContent = '₪' + productsTotal.toFixed(2);
+    var el2 = document.getElementById('edit-order-table-total'); if (el2) el2.textContent = '₪' + tableTotal.toFixed(2);
+    var el3 = document.getElementById('edit-order-grand-total'); if (el3) el3.textContent = '₪' + (productsTotal + tableTotal).toFixed(2);
+}
+
 function updateOrder() {
     var id = document.getElementById('edit-order-id').value;
+    var newTotal = parseFloat(document.getElementById('edit-order-grand-total').textContent.replace('₪', '')) || 0;
+    
     var data = {
         customer_id: document.getElementById('edit-order-customer').value,
         event_type: document.getElementById('edit-order-event-type').value,
@@ -1301,15 +1435,60 @@ function updateOrder() {
         guests_count: parseInt(document.getElementById('edit-order-guests').value) || null,
         delivery_address: document.getElementById('edit-order-address').value,
         notes: document.getElementById('edit-order-notes').value,
-        status: document.getElementById('edit-order-status').value
+        status: document.getElementById('edit-order-status').value,
+        total_amount: newTotal
     };
     
+    // First update the order
     db.from('orders').update(data).eq('id', id).then(function(res) {
-        if (res.error) { showToast('שגיאה בעדכון', 'error'); return; }
+        if (res.error) throw res.error;
+        
+        // Delete existing items and insert new ones
+        return db.from('order_items').delete().eq('order_id', id);
+    }).then(function() {
+        return db.from('order_table_items').delete().eq('order_id', id);
+    }).then(function() {
+        // Collect new order items
+        var orderItems = [];
+        var items = document.querySelectorAll('.edit-order-item');
+        for (var i = 0; i < items.length; i++) {
+            var itemId = items[i].dataset.itemId;
+            var productId = document.querySelector('select[name="edit_product_' + itemId + '"]').value;
+            var qty = parseInt(document.querySelector('input[name="edit_quantity_' + itemId + '"]').value) || 0;
+            var price = parseFloat(document.querySelector('input[name="edit_price_' + itemId + '"]').value) || 0;
+            if (productId && qty > 0) {
+                orderItems.push({ order_id: id, product_id: productId, quantity: qty, price_per_unit: price, total_price: price * qty });
+            }
+        }
+        if (orderItems.length > 0) {
+            return db.from('order_items').insert(orderItems);
+        }
+        return Promise.resolve();
+    }).then(function() {
+        // Collect new table items
+        var tableItems = [];
+        var tItems = document.querySelectorAll('.edit-order-table-item');
+        for (var j = 0; j < tItems.length; j++) {
+            var tItemId = tItems[j].dataset.itemId;
+            var tableItemId = document.querySelector('select[name="edit_table_item_' + tItemId + '"]').value;
+            var tQty = parseInt(document.querySelector('input[name="edit_table_quantity_' + tItemId + '"]').value) || 0;
+            var tPrice = parseFloat(document.querySelector('input[name="edit_table_price_' + tItemId + '"]').value) || 0;
+            if (tableItemId && tQty > 0) {
+                tableItems.push({ order_id: id, table_item_id: tableItemId, quantity: tQty, price_per_unit: tPrice, total_price: tPrice * tQty });
+            }
+        }
+        if (tableItems.length > 0) {
+            return db.from('order_table_items').insert(tableItems);
+        }
+        return Promise.resolve();
+    }).then(function() {
         showToast('הזמנה עודכנה בהצלחה');
         bootstrap.Modal.getInstance(document.getElementById('editOrderModal')).hide();
         loadOrders();
         loadHomeStats();
+    }).catch(function(err) {
+        console.error(err);
+        showToast('שגיאה בעדכון', 'error');
     });
 }
 

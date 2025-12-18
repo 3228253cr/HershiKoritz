@@ -1471,7 +1471,7 @@
 
     <!-- Edit Order Modal -->
     <div class="modal fade" id="editOrderModal" tabindex="-1">
-        <div class="modal-dialog modal-lg">
+        <div class="modal-dialog modal-xl">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">עריכת הזמנה</h5>
@@ -1499,23 +1499,19 @@
                                 <option value="other">אחר</option>
                             </select>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <label class="form-label">תאריך אירוע</label>
                             <input type="date" class="form-control" id="edit-order-event-date" required>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <label class="form-label">שעת משלוח</label>
                             <input type="time" class="form-control" id="edit-order-delivery-time" required>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <label class="form-label">מספר אורחים</label>
                             <input type="number" class="form-control" id="edit-order-guests" min="1">
                         </div>
-                        <div class="col-md-8">
-                            <label class="form-label">כתובת משלוח</label>
-                            <input type="text" class="form-control" id="edit-order-address">
-                        </div>
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <label class="form-label">סטטוס</label>
                             <select class="form-select" id="edit-order-status">
                                 <option value="new">חדש</option>
@@ -1527,8 +1523,48 @@
                             </select>
                         </div>
                         <div class="col-12">
+                            <label class="form-label">כתובת משלוח</label>
+                            <input type="text" class="form-control" id="edit-order-address">
+                        </div>
+                        
+                        <!-- Order Items -->
+                        <div class="col-12">
+                            <hr>
+                            <h6>פריטי הזמנה</h6>
+                            <div id="edit-order-items-container">
+                                <!-- Items will be added here -->
+                            </div>
+                            <button type="button" class="btn btn-outline-primary btn-sm mt-2" onclick="addEditOrderItem()">
+                                <i class="bi bi-plus-circle me-1"></i> הוסף פריט
+                            </button>
+                        </div>
+                        
+                        <!-- Table Items -->
+                        <div class="col-12">
+                            <hr>
+                            <h6>פריטי שולחן</h6>
+                            <div id="edit-order-table-items-container">
+                                <!-- Table items will be added here -->
+                            </div>
+                            <button type="button" class="btn btn-outline-secondary btn-sm mt-2" onclick="addEditOrderTableItem()">
+                                <i class="bi bi-plus-circle me-1"></i> הוסף פריט שולחן
+                            </button>
+                        </div>
+                        
+                        <!-- Notes -->
+                        <div class="col-md-6">
                             <label class="form-label">הערות</label>
                             <textarea class="form-control" id="edit-order-notes" rows="2"></textarea>
+                        </div>
+                        
+                        <!-- Totals -->
+                        <div class="col-md-6">
+                            <div class="bg-light p-3 rounded">
+                                <p class="mb-1">סה״כ מוצרים: <strong id="edit-order-products-total">₪0</strong></p>
+                                <p class="mb-1">סה״כ פריטי שולחן: <strong id="edit-order-table-total">₪0</strong></p>
+                                <hr class="my-2">
+                                <p class="mb-0 fs-5">סה״כ: <strong id="edit-order-grand-total">₪0</strong></p>
+                            </div>
                         </div>
                     </div>
                 </div>
