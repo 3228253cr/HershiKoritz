@@ -1,0 +1,1470 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hershi Koritz Catering - ניהול מטבח</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #e74c3c;
+            --accent-color: #3498db;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+            --light-bg: #ecf0f1;
+        }
+        
+        body {
+            background-color: var(--light-bg);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .navbar {
+            background: linear-gradient(135deg, var(--primary-color), #34495e);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+        
+        .navbar-brand {
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+        
+        .main-container {
+            padding: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .menu-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            height: 100%;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+        
+        .menu-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            color: inherit;
+        }
+        
+        .menu-card i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+        
+        .menu-card h5 {
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .menu-card p {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            margin: 0;
+        }
+        
+        .card-orders { border-top: 4px solid var(--secondary-color); }
+        .card-orders i { color: var(--secondary-color); }
+        
+        .card-products { border-top: 4px solid var(--accent-color); }
+        .card-products i { color: var(--accent-color); }
+        
+        .card-customers { border-top: 4px solid var(--success-color); }
+        .card-customers i { color: var(--success-color); }
+        
+        .card-reports { border-top: 4px solid var(--warning-color); }
+        .card-reports i { color: var(--warning-color); }
+        
+        .card-settings { border-top: 4px solid #9b59b6; }
+        .card-settings i { color: #9b59b6; }
+        
+        .card-payments { border-top: 4px solid #1abc9c; }
+        .card-payments i { color: #1abc9c; }
+        
+        .section-title {
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--light-bg);
+        }
+        
+        .stats-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .stats-card h3 {
+            font-size: 2rem;
+            font-weight: bold;
+            margin: 0;
+        }
+        
+        .stats-card p {
+            color: #7f8c8d;
+            margin: 5px 0 0 0;
+        }
+        
+        /* Page Content Styles */
+        .page-content {
+            display: none;
+        }
+        
+        .page-content.active {
+            display: block;
+        }
+        
+        .data-table {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .data-table th {
+            background: var(--primary-color);
+            color: white;
+            font-weight: 500;
+            padding: 15px;
+        }
+        
+        .data-table td {
+            padding: 12px 15px;
+            vertical-align: middle;
+        }
+        
+        .btn-action {
+            padding: 5px 10px;
+            font-size: 0.85rem;
+        }
+        
+        .form-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .nav-tabs .nav-link {
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+        
+        .nav-tabs .nav-link.active {
+            color: var(--secondary-color);
+            border-color: var(--secondary-color);
+            border-bottom-color: white;
+        }
+        
+        /* Print Styles */
+        @media print {
+            .no-print { display: none !important; }
+            .print-only { display: block !important; }
+            body { background: white; }
+            .navbar { display: none; }
+        }
+        
+        /* Mobile Styles */
+        @media (max-width: 768px) {
+            .menu-card {
+                padding: 15px;
+                margin-bottom: 10px;
+            }
+            .menu-card i {
+                font-size: 2rem;
+            }
+            .main-container {
+                padding: 10px;
+            }
+        }
+        
+        /* Loading Spinner */
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 50px;
+        }
+        
+        .loading.show {
+            display: block;
+        }
+        
+        /* Checklist Styles */
+        .checklist-item {
+            padding: 10px 15px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .checklist-item:last-child {
+            border-bottom: none;
+        }
+        
+        .checklist-item.completed {
+            background: #d5f5e3;
+        }
+        
+        .checklist-item.completed span {
+            text-decoration: line-through;
+            color: #7f8c8d;
+        }
+        
+        .checklist-checkbox {
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+        }
+        
+        /* Toast Notifications */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 9999;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark no-print">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#" onclick="showPage('home')">
+                <i class="bi bi-egg-fried me-2"></i>
+                Hershi Koritz Catering
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="showPage('home')">
+                            <i class="bi bi-house me-1"></i> ראשי
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="showPage('orders')">
+                            <i class="bi bi-clipboard-check me-1"></i> הזמנות
+                        </a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
+                            <i class="bi bi-file-text me-1"></i> דוחות
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#" onclick="showPage('report-cold-production')">ייצור קר</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="showPage('report-cold-packing')">אריזה קר</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="showPage('report-hot-production')">ייצור חם</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="showPage('report-hot-packing')">אריזה חם</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#" onclick="showPage('report-storage')">סיכום מלאי/אחסון</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="showPage('report-quantities')">כמויות כללי</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
+                            <i class="bi bi-gear me-1"></i> הגדרות
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#" onclick="showPage('products')">מוצרים ותמחור</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="showPage('categories')">קטגוריות</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="showPage('containers')">מיכלי אחסון</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="showPage('packing-rules')">כללי אריזה</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#" onclick="showPage('ingredients')">חומרי גלם</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="showPage('recipes')">מתכונים</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#" onclick="showPage('suppliers')">ספקים</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="showPage('table-items')">פריטי שולחן</a></li>
+                        </ul>
+                    </li>
+                </ul>
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="showPage('customers')">
+                            <i class="bi bi-people me-1"></i> לקוחות
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="showPage('payments')">
+                            <i class="bi bi-cash-coin me-1"></i> תשלומים
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Toast Container -->
+    <div class="toast-container"></div>
+
+    <div class="main-container">
+        <!-- Loading -->
+        <div class="loading" id="loadingSpinner">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">טוען...</span>
+            </div>
+            <p class="mt-3">טוען נתונים...</p>
+        </div>
+
+        <!-- Home Page -->
+        <div class="page-content active" id="page-home">
+            <!-- Stats Row -->
+            <div class="row g-3 mb-4">
+                <div class="col-6 col-md-3">
+                    <div class="stats-card">
+                        <h3 class="text-primary" id="stat-orders-today">0</h3>
+                        <p>הזמנות להיום</p>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="stats-card">
+                        <h3 class="text-success" id="stat-orders-week">0</h3>
+                        <p>הזמנות השבוע</p>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="stats-card">
+                        <h3 class="text-warning" id="stat-pending-payments">₪0</h3>
+                        <p>חובות פתוחים</p>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="stats-card">
+                        <h3 class="text-info" id="stat-customers">0</h3>
+                        <p>לקוחות</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Menu -->
+            <h4 class="section-title">תפריט ראשי</h4>
+            <div class="row g-3 mb-4">
+                <div class="col-6 col-md-4 col-lg-2">
+                    <a href="#" class="menu-card card-orders" onclick="showPage('new-order')">
+                        <i class="bi bi-plus-circle"></i>
+                        <h5>הזמנה חדשה</h5>
+                        <p>צור הזמנה חדשה</p>
+                    </a>
+                </div>
+                <div class="col-6 col-md-4 col-lg-2">
+                    <a href="#" class="menu-card card-orders" onclick="showPage('orders')">
+                        <i class="bi bi-clipboard-check"></i>
+                        <h5>הזמנות</h5>
+                        <p>ניהול הזמנות</p>
+                    </a>
+                </div>
+                <div class="col-6 col-md-4 col-lg-2">
+                    <a href="#" class="menu-card card-customers" onclick="showPage('customers')">
+                        <i class="bi bi-people"></i>
+                        <h5>לקוחות</h5>
+                        <p>ניהול לקוחות</p>
+                    </a>
+                </div>
+                <div class="col-6 col-md-4 col-lg-2">
+                    <a href="#" class="menu-card card-products" onclick="showPage('products')">
+                        <i class="bi bi-box-seam"></i>
+                        <h5>מוצרים</h5>
+                        <p>מוצרים ותמחור</p>
+                    </a>
+                </div>
+                <div class="col-6 col-md-4 col-lg-2">
+                    <a href="#" class="menu-card card-payments" onclick="showPage('payments')">
+                        <i class="bi bi-cash-coin"></i>
+                        <h5>תשלומים</h5>
+                        <p>מעקב תשלומים</p>
+                    </a>
+                </div>
+                <div class="col-6 col-md-4 col-lg-2">
+                    <a href="#" class="menu-card card-reports" onclick="showPage('reports')">
+                        <i class="bi bi-file-earmark-text"></i>
+                        <h5>דוחות</h5>
+                        <p>הפקת דוחות</p>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <h4 class="section-title">גישה מהירה להגדרות</h4>
+            <div class="row g-3">
+                <div class="col-6 col-md-3">
+                    <a href="#" class="menu-card card-settings" onclick="showPage('categories')">
+                        <i class="bi bi-tags"></i>
+                        <h5>קטגוריות</h5>
+                    </a>
+                </div>
+                <div class="col-6 col-md-3">
+                    <a href="#" class="menu-card card-settings" onclick="showPage('containers')">
+                        <i class="bi bi-archive"></i>
+                        <h5>מיכלי אחסון</h5>
+                    </a>
+                </div>
+                <div class="col-6 col-md-3">
+                    <a href="#" class="menu-card card-settings" onclick="showPage('suppliers')">
+                        <i class="bi bi-truck"></i>
+                        <h5>ספקים</h5>
+                    </a>
+                </div>
+                <div class="col-6 col-md-3">
+                    <a href="#" class="menu-card card-settings" onclick="showPage('table-items')">
+                        <i class="bi bi-cup-straw"></i>
+                        <h5>פריטי שולחן</h5>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Today's Orders -->
+            <h4 class="section-title mt-4">הזמנות להיום</h4>
+            <div class="data-table" id="today-orders-container">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>מס׳</th>
+                            <th>לקוח</th>
+                            <th>שעת משלוח</th>
+                            <th>סטטוס</th>
+                            <th>פעולות</th>
+                        </tr>
+                    </thead>
+                    <tbody id="today-orders-table">
+                        <tr><td colspan="5" class="text-center py-4">אין הזמנות להיום</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Orders Page -->
+        <div class="page-content" id="page-orders">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h4 class="section-title mb-0">ניהול הזמנות</h4>
+                <button class="btn btn-primary" onclick="showPage('new-order')">
+                    <i class="bi bi-plus-circle me-1"></i> הזמנה חדשה
+                </button>
+            </div>
+            
+            <!-- Filters -->
+            <div class="form-card mb-4">
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <label class="form-label">מתאריך</label>
+                        <input type="date" class="form-control" id="filter-from-date">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">עד תאריך</label>
+                        <input type="date" class="form-control" id="filter-to-date">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">סטטוס</label>
+                        <select class="form-select" id="filter-status">
+                            <option value="">הכל</option>
+                            <option value="new">חדש</option>
+                            <option value="confirmed">מאושר</option>
+                            <option value="in_production">בייצור</option>
+                            <option value="ready">מוכן</option>
+                            <option value="delivered">נמסר</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3 d-flex align-items-end">
+                        <button class="btn btn-outline-primary w-100" onclick="loadOrders()">
+                            <i class="bi bi-search me-1"></i> סנן
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="data-table">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>מס׳</th>
+                            <th>לקוח</th>
+                            <th>תאריך אירוע</th>
+                            <th>שעת משלוח</th>
+                            <th>סה״כ</th>
+                            <th>שולם</th>
+                            <th>יתרה</th>
+                            <th>סטטוס</th>
+                            <th>פעולות</th>
+                        </tr>
+                    </thead>
+                    <tbody id="orders-table">
+                        <tr><td colspan="9" class="text-center py-4">טוען...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- New Order Page -->
+        <div class="page-content" id="page-new-order">
+            <h4 class="section-title">הזמנה חדשה</h4>
+            <div class="form-card">
+                <form id="new-order-form">
+                    <div class="row g-3">
+                        <!-- Customer Selection -->
+                        <div class="col-md-6">
+                            <label class="form-label">לקוח *</label>
+                            <div class="input-group">
+                                <select class="form-select" id="order-customer" required>
+                                    <option value="">בחר לקוח...</option>
+                                </select>
+                                <button type="button" class="btn btn-outline-secondary" onclick="showQuickCustomerModal()">
+                                    <i class="bi bi-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Event Type -->
+                        <div class="col-md-6">
+                            <label class="form-label">סוג אירוע</label>
+                            <select class="form-select" id="order-event-type">
+                                <option value="">בחר סוג...</option>
+                                <option value="wedding">חתונה</option>
+                                <option value="bar_mitzvah">בר/בת מצווה</option>
+                                <option value="brit">ברית</option>
+                                <option value="sheva_brachot">שבע ברכות</option>
+                                <option value="corporate">אירוע עסקי</option>
+                                <option value="private">אירוע פרטי</option>
+                                <option value="other">אחר</option>
+                            </select>
+                        </div>
+                        
+                        <!-- Date & Time -->
+                        <div class="col-md-4">
+                            <label class="form-label">תאריך אירוע *</label>
+                            <input type="date" class="form-control" id="order-event-date" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">שעת משלוח *</label>
+                            <input type="time" class="form-control" id="order-delivery-time" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">מספר אורחים</label>
+                            <input type="number" class="form-control" id="order-guests" min="1">
+                        </div>
+                        
+                        <!-- Address -->
+                        <div class="col-12">
+                            <label class="form-label">כתובת משלוח</label>
+                            <input type="text" class="form-control" id="order-address">
+                        </div>
+                        
+                        <!-- Products -->
+                        <div class="col-12">
+                            <hr>
+                            <h5>פריטי הזמנה</h5>
+                            <div id="order-items-container">
+                                <!-- Items will be added here -->
+                            </div>
+                            <button type="button" class="btn btn-outline-primary mt-2" onclick="addOrderItem()">
+                                <i class="bi bi-plus-circle me-1"></i> הוסף פריט
+                            </button>
+                        </div>
+                        
+                        <!-- Table Items -->
+                        <div class="col-12">
+                            <hr>
+                            <h5>פריטי שולחן</h5>
+                            <div id="order-table-items-container">
+                                <!-- Table items will be added here -->
+                            </div>
+                            <button type="button" class="btn btn-outline-secondary mt-2" onclick="addOrderTableItem()">
+                                <i class="bi bi-plus-circle me-1"></i> הוסף פריט שולחן
+                            </button>
+                        </div>
+                        
+                        <!-- Notes -->
+                        <div class="col-12">
+                            <hr>
+                            <label class="form-label">הערות</label>
+                            <textarea class="form-control" id="order-notes" rows="3"></textarea>
+                        </div>
+                        
+                        <!-- Totals -->
+                        <div class="col-md-6">
+                            <div class="bg-light p-3 rounded">
+                                <h5>סיכום</h5>
+                                <p class="mb-1">סה״כ מוצרים: <strong id="order-products-total">₪0</strong></p>
+                                <p class="mb-1">סה״כ פריטי שולחן: <strong id="order-table-total">₪0</strong></p>
+                                <hr>
+                                <p class="mb-0 fs-5">סה״כ: <strong id="order-grand-total">₪0</strong></p>
+                            </div>
+                        </div>
+                        
+                        <!-- Submit -->
+                        <div class="col-12 text-end">
+                            <button type="button" class="btn btn-secondary me-2" onclick="showPage('orders')">ביטול</button>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-circle me-1"></i> שמור הזמנה
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Customers Page -->
+        <div class="page-content" id="page-customers">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h4 class="section-title mb-0">ניהול לקוחות</h4>
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#customerModal">
+                    <i class="bi bi-plus-circle me-1"></i> לקוח חדש
+                </button>
+            </div>
+            
+            <div class="data-table">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>שם</th>
+                            <th>טלפון</th>
+                            <th>אימייל</th>
+                            <th>כתובת</th>
+                            <th>פעולות</th>
+                        </tr>
+                    </thead>
+                    <tbody id="customers-table">
+                        <tr><td colspan="5" class="text-center py-4">טוען...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Products Page -->
+        <div class="page-content" id="page-products">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h4 class="section-title mb-0">מוצרים ותמחור</h4>
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#productModal">
+                    <i class="bi bi-plus-circle me-1"></i> מוצר חדש
+                </button>
+            </div>
+            
+            <!-- Category Tabs -->
+            <ul class="nav nav-tabs mb-3" id="productCategoryTabs">
+                <li class="nav-item">
+                    <a class="nav-link active" href="#" data-category="all">הכל</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" data-category="cold">פס קר</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" data-category="hot">פס חם</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" data-category="bakery">קונדיטוריה</a>
+                </li>
+            </ul>
+            
+            <div class="data-table">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>שם מוצר</th>
+                            <th>קטגוריה</th>
+                            <th>מחיר למנה</th>
+                            <th>תיאור</th>
+                            <th>פעילות</th>
+                            <th>פעולות</th>
+                        </tr>
+                    </thead>
+                    <tbody id="products-table">
+                        <tr><td colspan="6" class="text-center py-4">טוען...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Categories Page -->
+        <div class="page-content" id="page-categories">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h4 class="section-title mb-0">קטגוריות</h4>
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#categoryModal">
+                    <i class="bi bi-plus-circle me-1"></i> קטגוריה חדשה
+                </button>
+            </div>
+            
+            <div class="data-table">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>שם קטגוריה</th>
+                            <th>סוג</th>
+                            <th>פעולות</th>
+                        </tr>
+                    </thead>
+                    <tbody id="categories-table">
+                        <tr><td colspan="3" class="text-center py-4">טוען...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Containers Page -->
+        <div class="page-content" id="page-containers">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h4 class="section-title mb-0">מיכלי אחסון</h4>
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#containerModal">
+                    <i class="bi bi-plus-circle me-1"></i> מיכל חדש
+                </button>
+            </div>
+            
+            <div class="data-table">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>שם מיכל</th>
+                            <th>קיבולת (ליטר)</th>
+                            <th>קיבולת (מנות)</th>
+                            <th>תיאור</th>
+                            <th>פעולות</th>
+                        </tr>
+                    </thead>
+                    <tbody id="containers-table">
+                        <tr><td colspan="5" class="text-center py-4">טוען...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Suppliers Page -->
+        <div class="page-content" id="page-suppliers">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h4 class="section-title mb-0">ספקים</h4>
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#supplierModal">
+                    <i class="bi bi-plus-circle me-1"></i> ספק חדש
+                </button>
+            </div>
+            
+            <div class="data-table">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>שם ספק</th>
+                            <th>סוג</th>
+                            <th>טלפון</th>
+                            <th>וואטסאפ</th>
+                            <th>פעולות</th>
+                        </tr>
+                    </thead>
+                    <tbody id="suppliers-table">
+                        <tr><td colspan="5" class="text-center py-4">טוען...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Payments Page -->
+        <div class="page-content" id="page-payments">
+            <h4 class="section-title">מעקב תשלומים</h4>
+            
+            <!-- Summary Cards -->
+            <div class="row g-3 mb-4">
+                <div class="col-md-4">
+                    <div class="stats-card">
+                        <h3 class="text-success" id="payments-total-received">₪0</h3>
+                        <p>סה״כ התקבל</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="stats-card">
+                        <h3 class="text-warning" id="payments-total-pending">₪0</h3>
+                        <p>חובות פתוחים</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="stats-card">
+                        <h3 class="text-primary" id="payments-total-orders">₪0</h3>
+                        <p>סה״כ הזמנות</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="data-table">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>מס׳ הזמנה</th>
+                            <th>לקוח</th>
+                            <th>תאריך אירוע</th>
+                            <th>סה״כ</th>
+                            <th>שולם</th>
+                            <th>יתרה</th>
+                            <th>פעולות</th>
+                        </tr>
+                    </thead>
+                    <tbody id="payments-table">
+                        <tr><td colspan="7" class="text-center py-4">טוען...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Reports Hub Page -->
+        <div class="page-content" id="page-reports">
+            <h4 class="section-title">מרכז דוחות</h4>
+            
+            <!-- Date Selection -->
+            <div class="form-card mb-4">
+                <div class="row g-3 align-items-end">
+                    <div class="col-md-4">
+                        <label class="form-label">בחר תאריך להפקת דוחות</label>
+                        <input type="date" class="form-control" id="report-date" value="">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">או בחר הזמנה ספציפית</label>
+                        <select class="form-select" id="report-order-select">
+                            <option value="">בחר הזמנה...</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <div class="menu-card" onclick="generateReport('cold-production')">
+                        <i class="bi bi-snow text-info"></i>
+                        <h5>דוח ייצור קר</h5>
+                        <p>סלטים, קינוחים, גלידות</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="menu-card" onclick="generateReport('cold-packing')">
+                        <i class="bi bi-box-seam text-info"></i>
+                        <h5>דוח אריזה קר</h5>
+                        <p>אריזת פריטים קרים</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="menu-card" onclick="generateReport('hot-production')">
+                        <i class="bi bi-fire text-danger"></i>
+                        <h5>דוח ייצור חם</h5>
+                        <p>מנות חמות</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="menu-card" onclick="generateReport('hot-packing')">
+                        <i class="bi bi-box text-danger"></i>
+                        <h5>דוח אריזה חם</h5>
+                        <p>אריזת פריטים חמים</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="menu-card" onclick="generateReport('storage')">
+                        <i class="bi bi-archive text-success"></i>
+                        <h5>סיכום מלאי/אחסון</h5>
+                        <p>מיכלים נדרשים</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="menu-card" onclick="generateReport('quantities')">
+                        <i class="bi bi-calculator text-warning"></i>
+                        <h5>כמויות כללי</h5>
+                        <p>סיכום כל הכמויות</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="menu-card" onclick="generateReport('bakery')">
+                        <i class="bi bi-cake2 text-secondary"></i>
+                        <h5>הזמנה לקונדיטוריה</h5>
+                        <p>שליחה בוואטסאפ</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="menu-card" onclick="generateReport('table-items')">
+                        <i class="bi bi-cup-straw text-primary"></i>
+                        <h5>הזמנה לפריטי שולחן</h5>
+                        <p>שליחה בוואטסאפ</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Report Display Page -->
+        <div class="page-content" id="page-report-display">
+            <div class="d-flex justify-content-between align-items-center mb-4 no-print">
+                <h4 class="section-title mb-0" id="report-title">דוח</h4>
+                <div>
+                    <button class="btn btn-outline-secondary me-2" onclick="window.print()">
+                        <i class="bi bi-printer me-1"></i> הדפס
+                    </button>
+                    <button class="btn btn-secondary" onclick="showPage('reports')">
+                        <i class="bi bi-arrow-right me-1"></i> חזור
+                    </button>
+                </div>
+            </div>
+            
+            <div class="form-card" id="report-content">
+                <!-- Report content will be generated here -->
+            </div>
+        </div>
+
+        <!-- Table Items Page -->
+        <div class="page-content" id="page-table-items">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h4 class="section-title mb-0">פריטי שולחן</h4>
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#tableItemModal">
+                    <i class="bi bi-plus-circle me-1"></i> פריט חדש
+                </button>
+            </div>
+            
+            <div class="data-table">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>שם פריט</th>
+                            <th>קטגוריה</th>
+                            <th>ספק</th>
+                            <th>מחיר ליחידה</th>
+                            <th>פעולות</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-items-table">
+                        <tr><td colspan="5" class="text-center py-4">טוען...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Packing Rules Page -->
+        <div class="page-content" id="page-packing-rules">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h4 class="section-title mb-0">כללי אריזה</h4>
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#packingRuleModal">
+                    <i class="bi bi-plus-circle me-1"></i> כלל חדש
+                </button>
+            </div>
+            
+            <div class="data-table">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>מוצר</th>
+                            <th>מ-מנות</th>
+                            <th>עד-מנות</th>
+                            <th>מיכל</th>
+                            <th>פעולות</th>
+                        </tr>
+                    </thead>
+                    <tbody id="packing-rules-table">
+                        <tr><td colspan="5" class="text-center py-4">טוען...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Ingredients Page -->
+        <div class="page-content" id="page-ingredients">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h4 class="section-title mb-0">חומרי גלם</h4>
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#ingredientModal">
+                    <i class="bi bi-plus-circle me-1"></i> חומר גלם חדש
+                </button>
+            </div>
+            
+            <div class="data-table">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>שם</th>
+                            <th>יחידה</th>
+                            <th>עלות ליחידה</th>
+                            <th>מלאי נוכחי</th>
+                            <th>מלאי מינימום</th>
+                            <th>פעולות</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ingredients-table">
+                        <tr><td colspan="6" class="text-center py-4">טוען...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Recipes Page -->
+        <div class="page-content" id="page-recipes">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h4 class="section-title mb-0">מתכונים</h4>
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#recipeModal">
+                    <i class="bi bi-plus-circle me-1"></i> מתכון חדש
+                </button>
+            </div>
+            
+            <div class="data-table">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>מוצר</th>
+                            <th>חומר גלם</th>
+                            <th>כמות למנה</th>
+                            <th>יחידה</th>
+                            <th>פעולות</th>
+                        </tr>
+                    </thead>
+                    <tbody id="recipes-table">
+                        <tr><td colspan="5" class="text-center py-4">טוען...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Customer Modal -->
+    <div class="modal fade" id="customerModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">לקוח חדש</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="customer-form">
+                    <div class="modal-body">
+                        <input type="hidden" id="customer-id">
+                        <div class="mb-3">
+                            <label class="form-label">שם *</label>
+                            <input type="text" class="form-control" id="customer-name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">טלפון</label>
+                            <input type="tel" class="form-control" id="customer-phone">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">אימייל</label>
+                            <input type="email" class="form-control" id="customer-email">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">כתובת</label>
+                            <input type="text" class="form-control" id="customer-address">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">הערות</label>
+                            <textarea class="form-control" id="customer-notes" rows="2"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ביטול</button>
+                        <button type="submit" class="btn btn-primary">שמור</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Product Modal -->
+    <div class="modal fade" id="productModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">מוצר חדש</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="product-form">
+                    <div class="modal-body">
+                        <input type="hidden" id="product-id">
+                        <div class="mb-3">
+                            <label class="form-label">שם מוצר *</label>
+                            <input type="text" class="form-control" id="product-name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">קטגוריה *</label>
+                            <select class="form-select" id="product-category" required>
+                                <option value="">בחר קטגוריה...</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">מחיר למנה (₪)</label>
+                            <input type="number" class="form-control" id="product-price" min="0" step="0.01">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">תיאור</label>
+                            <textarea class="form-control" id="product-description" rows="2"></textarea>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="product-active" checked>
+                            <label class="form-check-label" for="product-active">מוצר פעיל</label>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ביטול</button>
+                        <button type="submit" class="btn btn-primary">שמור</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Category Modal -->
+    <div class="modal fade" id="categoryModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">קטגוריה חדשה</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="category-form">
+                    <div class="modal-body">
+                        <input type="hidden" id="category-id">
+                        <div class="mb-3">
+                            <label class="form-label">שם קטגוריה *</label>
+                            <input type="text" class="form-control" id="category-name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">סוג *</label>
+                            <select class="form-select" id="category-type" required>
+                                <option value="cold">פס קר</option>
+                                <option value="hot">פס חם</option>
+                                <option value="bakery">קונדיטוריה</option>
+                                <option value="table">פריטי שולחן</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ביטול</button>
+                        <button type="submit" class="btn btn-primary">שמור</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Container Modal -->
+    <div class="modal fade" id="containerModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">מיכל אחסון חדש</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="container-form">
+                    <div class="modal-body">
+                        <input type="hidden" id="container-id">
+                        <div class="mb-3">
+                            <label class="form-label">שם מיכל *</label>
+                            <input type="text" class="form-control" id="container-name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">קיבולת (ליטר)</label>
+                            <input type="number" class="form-control" id="container-liters" min="0" step="0.1">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">קיבולת (מנות)</label>
+                            <input type="number" class="form-control" id="container-portions" min="0">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">תיאור</label>
+                            <textarea class="form-control" id="container-description" rows="2"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ביטול</button>
+                        <button type="submit" class="btn btn-primary">שמור</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Supplier Modal -->
+    <div class="modal fade" id="supplierModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">ספק חדש</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="supplier-form">
+                    <div class="modal-body">
+                        <input type="hidden" id="supplier-id">
+                        <div class="mb-3">
+                            <label class="form-label">שם ספק *</label>
+                            <input type="text" class="form-control" id="supplier-name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">סוג *</label>
+                            <select class="form-select" id="supplier-type" required>
+                                <option value="bakery">קונדיטוריה</option>
+                                <option value="table">פריטי שולחן</option>
+                                <option value="ingredients">חומרי גלם</option>
+                                <option value="other">אחר</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">טלפון</label>
+                            <input type="tel" class="form-control" id="supplier-phone">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">וואטסאפ (עם קידומת מדינה)</label>
+                            <input type="tel" class="form-control" id="supplier-whatsapp" placeholder="972501234567">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">אימייל</label>
+                            <input type="email" class="form-control" id="supplier-email">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">כתובת</label>
+                            <input type="text" class="form-control" id="supplier-address">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">הערות</label>
+                            <textarea class="form-control" id="supplier-notes" rows="2"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ביטול</button>
+                        <button type="submit" class="btn btn-primary">שמור</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Payment Modal -->
+    <div class="modal fade" id="paymentModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">רישום תשלום</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="payment-form">
+                    <div class="modal-body">
+                        <input type="hidden" id="payment-order-id">
+                        <div class="mb-3">
+                            <label class="form-label">סכום לתשלום *</label>
+                            <input type="number" class="form-control" id="payment-amount" min="0" step="0.01" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">אמצעי תשלום</label>
+                            <select class="form-select" id="payment-method">
+                                <option value="cash">מזומן</option>
+                                <option value="transfer">העברה בנקאית</option>
+                                <option value="check">צ׳ק</option>
+                                <option value="credit">אשראי</option>
+                                <option value="bit">ביט</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">תאריך תשלום</label>
+                            <input type="date" class="form-control" id="payment-date">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">אסמכתא</label>
+                            <input type="text" class="form-control" id="payment-reference">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">הערות</label>
+                            <textarea class="form-control" id="payment-notes" rows="2"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ביטול</button>
+                        <button type="submit" class="btn btn-primary">שמור תשלום</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Table Item Modal -->
+    <div class="modal fade" id="tableItemModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">פריט שולחן חדש</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="table-item-form">
+                    <div class="modal-body">
+                        <input type="hidden" id="table-item-id">
+                        <div class="mb-3">
+                            <label class="form-label">שם פריט *</label>
+                            <input type="text" class="form-control" id="table-item-name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">קטגוריה</label>
+                            <input type="text" class="form-control" id="table-item-category" placeholder="מפות, כלים, קישוטים...">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">ספק</label>
+                            <select class="form-select" id="table-item-supplier">
+                                <option value="">בחר ספק...</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">מחיר ליחידה (₪)</label>
+                            <input type="number" class="form-control" id="table-item-price" min="0" step="0.01">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">תיאור</label>
+                            <textarea class="form-control" id="table-item-description" rows="2"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ביטול</button>
+                        <button type="submit" class="btn btn-primary">שמור</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Packing Rule Modal -->
+    <div class="modal fade" id="packingRuleModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">כלל אריזה חדש</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="packing-rule-form">
+                    <div class="modal-body">
+                        <input type="hidden" id="packing-rule-id">
+                        <div class="mb-3">
+                            <label class="form-label">מוצר *</label>
+                            <select class="form-select" id="packing-rule-product" required>
+                                <option value="">בחר מוצר...</option>
+                            </select>
+                        </div>
+                        <div class="row">
+                            <div class="col-6 mb-3">
+                                <label class="form-label">מ-מנות *</label>
+                                <input type="number" class="form-control" id="packing-rule-min" min="1" required>
+                            </div>
+                            <div class="col-6 mb-3">
+                                <label class="form-label">עד-מנות *</label>
+                                <input type="number" class="form-control" id="packing-rule-max" min="1" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">מיכל *</label>
+                            <select class="form-select" id="packing-rule-container" required>
+                                <option value="">בחר מיכל...</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ביטול</button>
+                        <button type="submit" class="btn btn-primary">שמור</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ingredient Modal -->
+    <div class="modal fade" id="ingredientModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">חומר גלם חדש</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="ingredient-form">
+                    <div class="modal-body">
+                        <input type="hidden" id="ingredient-id">
+                        <div class="mb-3">
+                            <label class="form-label">שם *</label>
+                            <input type="text" class="form-control" id="ingredient-name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">יחידת מידה *</label>
+                            <select class="form-select" id="ingredient-unit" required>
+                                <option value="gram">גרם</option>
+                                <option value="kg">קילוגרם</option>
+                                <option value="liter">ליטר</option>
+                                <option value="ml">מ״ל</option>
+                                <option value="unit">יחידה</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">עלות ליחידה (₪)</label>
+                            <input type="number" class="form-control" id="ingredient-cost" min="0" step="0.01">
+                        </div>
+                        <div class="row">
+                            <div class="col-6 mb-3">
+                                <label class="form-label">מלאי נוכחי</label>
+                                <input type="number" class="form-control" id="ingredient-stock" min="0" step="0.01">
+                            </div>
+                            <div class="col-6 mb-3">
+                                <label class="form-label">מלאי מינימום</label>
+                                <input type="number" class="form-control" id="ingredient-min-stock" min="0" step="0.01">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ביטול</button>
+                        <button type="submit" class="btn btn-primary">שמור</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recipe Modal -->
+    <div class="modal fade" id="recipeModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">מתכון חדש</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="recipe-form">
+                    <div class="modal-body">
+                        <input type="hidden" id="recipe-id">
+                        <div class="mb-3">
+                            <label class="form-label">מוצר *</label>
+                            <select class="form-select" id="recipe-product" required>
+                                <option value="">בחר מוצר...</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">חומר גלם *</label>
+                            <select class="form-select" id="recipe-ingredient" required>
+                                <option value="">בחר חומר גלם...</option>
+                            </select>
+                        </div>
+                        <div class="row">
+                            <div class="col-6 mb-3">
+                                <label class="form-label">כמות למנה *</label>
+                                <input type="number" class="form-control" id="recipe-quantity" min="0" step="0.001" required>
+                            </div>
+                            <div class="col-6 mb-3">
+                                <label class="form-label">יחידה *</label>
+                                <select class="form-select" id="recipe-unit" required>
+                                    <option value="gram">גרם</option>
+                                    <option value="kg">קילוגרם</option>
+                                    <option value="liter">ליטר</option>
+                                    <option value="ml">מ״ל</option>
+                                    <option value="unit">יחידה</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ביטול</button>
+                        <button type="submit" class="btn btn-primary">שמור</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="app.js"></script>
+</body>
+</html>
