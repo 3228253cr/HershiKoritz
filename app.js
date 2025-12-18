@@ -1201,8 +1201,122 @@ function saveOrder() {
     });
 }
 
-function viewOrder(id) { showToast('צפייה בהזמנה - בקרוב'); }
-function editOrder(id) { showToast('עריכת הזמנה - בקרוב'); }
+function viewOrder(id) {
+    db.from('orders').select('*, customers(name, phone, address), order_items(*, products(name)), order_table_items(*, table_items(name))').eq('id', id).single().then(function(res) {
+        if (res.error) { showToast('שגיאה בטעינת הזמנה', 'error'); return; }
+        var order = res.data;
+        var balance = (order.total_amount || 0) - (order.paid_amount || 0);
+        
+        var html = '<div class="row">';
+        html += '<div class="col-md-6"><h6>פרטי לקוח</h6>';
+        html += '<p><strong>שם:</strong> ' + (order.customers ? order.customers.name : '-') + '</p>';
+        html += '<p><strong>טלפון:</strong> ' + (order.customers && order.customers.phone ? order.customers.phone : '-') + '</p>';
+        html += '<p><strong>כתובת משלוח:</strong> ' + (order.delivery_address || '-') + '</p></div>';
+        html += '<div class="col-md-6"><h6>פרטי אירוע</h6>';
+        html += '<p><strong>תאריך:</strong> ' + order.event_date + '</p>';
+        html += '<p><strong>שעת משלוח:</strong> ' + order.delivery_time + '</p>';
+        html += '<p><strong>סוג אירוע:</strong> ' + getEventTypeLabel(order.event_type) + '</p>';
+        html += '<p><strong>מספר אורחים:</strong> ' + (order.guests_count || '-') + '</p></div></div>';
+        
+        html += '<hr><h6>פריטי הזמנה</h6>';
+        if (order.order_items && order.order_items.length > 0) {
+            html += '<table class="table table-sm"><thead><tr><th>מוצר</th><th>כמות</th><th>מחיר</th><th>סה"כ</th></tr></thead><tbody>';
+            for (var i = 0; i < order.order_items.length; i++) {
+                var item = order.order_items[i];
+                html += '<tr><td>' + (item.products ? item.products.name : '-') + '</td>';
+                html += '<td>' + item.quantity + '</td>';
+                html += '<td>₪' + (item.price_per_unit || 0).toFixed(2) + '</td>';
+                html += '<td>₪' + (item.total_price || 0).toFixed(2) + '</td></tr>';
+            }
+            html += '</tbody></table>';
+        } else {
+            html += '<p class="text-muted">אין פריטים</p>';
+        }
+        
+        if (order.order_table_items && order.order_table_items.length > 0) {
+            html += '<h6>פריטי שולחן</h6>';
+            html += '<table class="table table-sm"><thead><tr><th>פריט</th><th>כמות</th><th>מחיר</th><th>סה"כ</th></tr></thead><tbody>';
+            for (var j = 0; j < order.order_table_items.length; j++) {
+                var tItem = order.order_table_items[j];
+                html += '<tr><td>' + (tItem.table_items ? tItem.table_items.name : '-') + '</td>';
+                html += '<td>' + tItem.quantity + '</td>';
+                html += '<td>₪' + (tItem.price_per_unit || 0).toFixed(2) + '</td>';
+                html += '<td>₪' + (tItem.total_price || 0).toFixed(2) + '</td></tr>';
+            }
+            html += '</tbody></table>';
+        }
+        
+        html += '<hr><div class="row"><div class="col-md-6">';
+        html += '<h6>הערות</h6><p>' + (order.notes || 'אין הערות') + '</p></div>';
+        html += '<div class="col-md-6"><h6>סיכום כספי</h6>';
+        html += '<p><strong>סה"כ:</strong> ₪' + (order.total_amount || 0).toLocaleString() + '</p>';
+        html += '<p><strong>שולם:</strong> ₪' + (order.paid_amount || 0).toLocaleString() + '</p>';
+        html += '<p class="' + (balance > 0 ? 'text-danger' : 'text-success') + '"><strong>יתרה:</strong> ₪' + balance.toLocaleString() + '</p>';
+        html += '</div></div>';
+        
+        document.getElementById('view-order-content').innerHTML = html;
+        document.getElementById('view-order-title').textContent = 'הזמנה #' + order.order_number;
+        new bootstrap.Modal(document.getElementById('viewOrderModal')).show();
+    });
+}
+
+function editOrder(id) {
+    db.from('orders').select('*, order_items(*, products(name, price_per_portion)), order_table_items(*, table_items(name, price_per_unit))').eq('id', id).single().then(function(res) {
+        if (res.error) { showToast('שגיאה בטעינת הזמנה', 'error'); return; }
+        var order = res.data;
+        
+        document.getElementById('edit-order-id').value = order.id;
+        document.getElementById('edit-order-customer').value = order.customer_id;
+        document.getElementById('edit-order-event-type').value = order.event_type || '';
+        document.getElementById('edit-order-event-date').value = order.event_date;
+        document.getElementById('edit-order-delivery-time').value = order.delivery_time;
+        document.getElementById('edit-order-guests').value = order.guests_count || '';
+        document.getElementById('edit-order-address').value = order.delivery_address || '';
+        document.getElementById('edit-order-notes').value = order.notes || '';
+        document.getElementById('edit-order-status').value = order.status;
+        
+        // Populate customer dropdown
+        var customerSelect = document.getElementById('edit-order-customer');
+        customerSelect.innerHTML = '<option value="">בחר לקוח...</option>';
+        for (var c = 0; c < cachedData.customers.length; c++) {
+            var cust = cachedData.customers[c];
+            var opt = document.createElement('option');
+            opt.value = cust.id;
+            opt.textContent = cust.name;
+            if (cust.id === order.customer_id) opt.selected = true;
+            customerSelect.appendChild(opt);
+        }
+        
+        new bootstrap.Modal(document.getElementById('editOrderModal')).show();
+    });
+}
+
+function updateOrder() {
+    var id = document.getElementById('edit-order-id').value;
+    var data = {
+        customer_id: document.getElementById('edit-order-customer').value,
+        event_type: document.getElementById('edit-order-event-type').value,
+        event_date: document.getElementById('edit-order-event-date').value,
+        delivery_time: document.getElementById('edit-order-delivery-time').value,
+        guests_count: parseInt(document.getElementById('edit-order-guests').value) || null,
+        delivery_address: document.getElementById('edit-order-address').value,
+        notes: document.getElementById('edit-order-notes').value,
+        status: document.getElementById('edit-order-status').value
+    };
+    
+    db.from('orders').update(data).eq('id', id).then(function(res) {
+        if (res.error) { showToast('שגיאה בעדכון', 'error'); return; }
+        showToast('הזמנה עודכנה בהצלחה');
+        bootstrap.Modal.getInstance(document.getElementById('editOrderModal')).hide();
+        loadOrders();
+        loadHomeStats();
+    });
+}
+
+function getEventTypeLabel(type) {
+    var labels = { wedding: 'חתונה', bar_mitzvah: 'בר/בת מצווה', brit: 'ברית', sheva_brachot: 'שבע ברכות', corporate: 'אירוע עסקי', private: 'אירוע פרטי', other: 'אחר' };
+    return labels[type] || type || '-';
+}
 
 function showQuickCustomerModal() {
     document.getElementById('customer-id').value = '';

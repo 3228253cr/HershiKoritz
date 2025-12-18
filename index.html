@@ -118,7 +118,6 @@
             margin: 5px 0 0 0;
         }
         
-        /* Page Content Styles */
         .page-content {
             display: none;
         }
@@ -169,7 +168,6 @@
             border-bottom-color: white;
         }
         
-        /* Print Styles */
         @media print {
             .no-print { display: none !important; }
             .print-only { display: block !important; }
@@ -177,7 +175,6 @@
             .navbar { display: none; }
         }
         
-        /* Mobile Styles */
         @media (max-width: 768px) {
             .menu-card {
                 padding: 15px;
@@ -191,7 +188,6 @@
             }
         }
         
-        /* Loading Spinner */
         .loading {
             display: none;
             text-align: center;
@@ -202,7 +198,6 @@
             display: block;
         }
         
-        /* Checklist Styles */
         .checklist-item {
             padding: 10px 15px;
             border-bottom: 1px solid #eee;
@@ -230,7 +225,6 @@
             cursor: pointer;
         }
         
-        /* Toast Notifications */
         .toast-container {
             position: fixed;
             top: 20px;
@@ -262,19 +256,10 @@
                             <i class="bi bi-clipboard-check me-1"></i> הזמנות
                         </a>
                     </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="showPage('reports')">
                             <i class="bi bi-file-text me-1"></i> דוחות
                         </a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#" onclick="showPage('report-cold-production')">ייצור קר</a></li>
-                            <li><a class="dropdown-item" href="#" onclick="showPage('report-cold-packing')">אריזה קר</a></li>
-                            <li><a class="dropdown-item" href="#" onclick="showPage('report-hot-production')">ייצור חם</a></li>
-                            <li><a class="dropdown-item" href="#" onclick="showPage('report-hot-packing')">אריזה חם</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="#" onclick="showPage('report-storage')">סיכום מלאי/אחסון</a></li>
-                            <li><a class="dropdown-item" href="#" onclick="showPage('report-quantities')">כמויות כללי</a></li>
-                        </ul>
                     </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
@@ -1459,6 +1444,100 @@
                         <button type="submit" class="btn btn-primary">שמור</button>
                     </div>
                 </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- View Order Modal -->
+    <div class="modal fade" id="viewOrderModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="view-order-title">צפייה בהזמנה</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="view-order-content">
+                    טוען...
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">סגור</button>
+                    <button type="button" class="btn btn-primary" onclick="window.print()">
+                        <i class="bi bi-printer me-1"></i> הדפס
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Order Modal -->
+    <div class="modal fade" id="editOrderModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">עריכת הזמנה</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="edit-order-id">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">לקוח</label>
+                            <select class="form-select" id="edit-order-customer" required>
+                                <option value="">בחר לקוח...</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">סוג אירוע</label>
+                            <select class="form-select" id="edit-order-event-type">
+                                <option value="">בחר סוג...</option>
+                                <option value="wedding">חתונה</option>
+                                <option value="bar_mitzvah">בר/בת מצווה</option>
+                                <option value="brit">ברית</option>
+                                <option value="sheva_brachot">שבע ברכות</option>
+                                <option value="corporate">אירוע עסקי</option>
+                                <option value="private">אירוע פרטי</option>
+                                <option value="other">אחר</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">תאריך אירוע</label>
+                            <input type="date" class="form-control" id="edit-order-event-date" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">שעת משלוח</label>
+                            <input type="time" class="form-control" id="edit-order-delivery-time" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">מספר אורחים</label>
+                            <input type="number" class="form-control" id="edit-order-guests" min="1">
+                        </div>
+                        <div class="col-md-8">
+                            <label class="form-label">כתובת משלוח</label>
+                            <input type="text" class="form-control" id="edit-order-address">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">סטטוס</label>
+                            <select class="form-select" id="edit-order-status">
+                                <option value="new">חדש</option>
+                                <option value="confirmed">מאושר</option>
+                                <option value="in_production">בייצור</option>
+                                <option value="ready">מוכן</option>
+                                <option value="delivered">נמסר</option>
+                                <option value="cancelled">בוטל</option>
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">הערות</label>
+                            <textarea class="form-control" id="edit-order-notes" rows="2"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ביטול</button>
+                    <button type="button" class="btn btn-primary" onclick="updateOrder()">
+                        <i class="bi bi-check-circle me-1"></i> שמור שינויים
+                    </button>
+                </div>
             </div>
         </div>
     </div>
